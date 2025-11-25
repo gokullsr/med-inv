@@ -5,9 +5,34 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, #fafbfd 0%, #f5f7fa 100%);
+  min-height: 100vh;
+  color: #263238;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection colors */
+::selection {
+  background: rgba(44, 90, 160, 0.2);
+  color: #263238;
+}
+
+::-moz-selection {
+  background: rgba(44, 90, 160, 0.2);
+  color: #263238;
 }
