@@ -1,38 +1,89 @@
-import express from "express";
-import Patient from "../models/Patient.js";
-import AuditLog from "../models/AuditLog.js";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-const router = express.Router();
+const Patients = () => {
+  const [patients, setPatients] = useState([]);
+  const [form, setForm] = useState({ name: "", age: "", condition: "" });
 
-// Get all patients
-router.get("/", async (req, res) => {
-  try {
-    const patients = await Patient.find().sort({ name: 1 });
-    res.json(patients);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+  
+  const fetchPatients = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/patients");
+      setPatients(res.data);
+    } catch (err) {
+      console.error("Error fetching patients:", err);
+    }
+  };
 
-// Add new patient
-router.post("/", async (req, res) => {
-  try {
-    const patient = new Patient(req.body);
-    const savedPatient = await patient.save();
-    
-    await AuditLog.create({
-      action: 'PATIENT_ADDED',
-      description: `Patient "${savedPatient.name}" registered`,
-      user: "System",
-      entityType: 'Patient',
-      entityId: savedPatient._id,
-      newData: savedPatient
-    });
-    
-    res.status(201).json(savedPatient);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
+  useEffect(() => {
+    fetchPatients();
+  }, []);
 
-export default router;
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post("http://localhost:5000/patients", form);
+      setForm({ name: "", age: "", condition: "" });
+      fetchPatients();
+      alert("✅ Patient added successfully!");
+    } catch (err) {
+      console.error("Error adding patient:", err);
+      alert("❌ Failed to add patient");
+    }
+  };
+
+  return (
+    <div className="page">
+      <h1>🧑‍⚕️ Patients</h1>
+
+      {/* Add Patient Form */}
+      <form className="patient-form" onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Name"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          required
+        />
+        <input
+          type="number"
+          placeholder="Age"
+          value={form.age}
+          onChange={(e) => setForm({ ...form, age: e.target.value })}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Condition"
+          value={form.condition}
+          onChange={(e) => setForm({ ...form, condition: e.target.value })}
+          required
+        />
+        <button type="submit">Add Patient</button>
+      </form>
+
+      {/* Patient List */}
+      <table className="patient-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Condition</th>
+          </tr>
+        </thead>
+        <tbody>
+          {patients.map((p) => (
+            <tr key={p._id}>
+              <td>{p.name}</td>
+              <td>{p.age}</td>
+              <td>{p.condition}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default Patients;

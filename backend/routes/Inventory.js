@@ -1,112 +1,54 @@
-import express from "express";
-import Inventory from "../models/Inventory.js";
-import AuditLog from "../models/AuditLog.js";
-
+const express = require('express');
 const router = express.Router();
+const Medicine = require('../models/Medicine');
 
-// Get all inventory items
-router.get("/", async (req, res) => {
+
+router.get('/', async (req, res) => {
   try {
-    const items = await Inventory.find().sort({ name: 1 });
-    res.json(items);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Add new medicine
-router.post("/", async (req, res) => {
-  try {
-    const { name, category, manufacturer, price, quantity, expiryDate } = req.body;
-
-    // Validate required fields
-    if (!name || !price || !quantity || !expiryDate) {
-      return res.status(400).json({ 
-        error: "Missing required fields: name, price, quantity, expiryDate" 
-      });
-    }
-
-    const newMedicine = new Inventory({
-      name: name.trim(),
-      category: category?.trim() || "General",
-      manufacturer: manufacturer?.trim() || "Unknown Manufacturer",
-      price: parseFloat(price),
-      quantity: parseInt(quantity),
-      expiryDate: new Date(expiryDate)
-    });
-
-    const savedMedicine = await newMedicine.save();
-    
-    // Log the action
-    await AuditLog.create({
-      action: 'MEDICINE_ADDED',
-      description: `Medicine "${savedMedicine.name}" added to inventory`,
-      user: "System",
-      entityType: 'Medicine',
-      entityId: savedMedicine._id,
-      newData: savedMedicine
-    });
-    
-    res.status(201).json(savedMedicine);
-    
-  } catch (err) {
-    if (err.code === 11000) {
-      return res.status(400).json({ error: "Medicine with this name already exists" });
-    }
-    res.status(400).json({ error: err.message });
-  }
-});
-
-// Update medicine
-router.put("/:id", async (req, res) => {
-  try {
-    const medicine = await Inventory.findByIdAndUpdate(
-      req.params.id, 
-      req.body, 
-      { new: true, runValidators: true }
+    const medicines = await Medicine.find();
+    const today = new Date();
+    const alerts = medicines.filter(med => 
+      med.quantity < 10 || 
+      (med.expiryDate - today) / (1000 * 60 * 60 * 24) < 30 
     );
-    
-    if (!medicine) {
-      return res.status(404).json({ error: "Medicine not found" });
-    }
+    res.json({ medicines, alerts });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
-    await AuditLog.create({
-      action: 'MEDICINE_UPDATED',
-      description: `Medicine "${medicine.name}" updated`,
-      user: "System",
-      entityType: 'Medicine',
-      entityId: medicine._id,
-      newData: medicine
-    });
 
+router.post('/', async (req, res) => {
+  const { name, description, quantity, price, expiryDate, category } = req.body;
+  try {
+    const newMedicine = new Medicine({ name, description, quantity, price, expiryDate, category });
+    await newMedicine.save();
+    res.status(201).json(newMedicine);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+
+router.put('/:id', async (req, res) => {
+  try {
+    const medicine = await Medicine.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!medicine) return res.status(404).json({ message: 'Medicine not found' });
     res.json(medicine);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ message: err.message });
   }
 });
 
-// Delete medicine
-router.delete("/:id", async (req, res) => {
+
+router.delete('/:id', async (req, res) => {
   try {
-    const medicine = await Inventory.findByIdAndDelete(req.params.id);
-    
-    if (!medicine) {
-      return res.status(404).json({ error: "Medicine not found" });
-    }
-
-    await AuditLog.create({
-      action: 'MEDICINE_DELETED',
-      description: `Medicine "${medicine.name}" deleted from inventory`,
-      user: "System",
-      entityType: 'Medicine',
-      entityId: medicine._id,
-      oldData: medicine
-    });
-
-    res.json({ message: "Medicine deleted successfully" });
+    const medicine = await Medicine.findByIdAndDelete(req.params.id);
+    if (!medicine) return res.status(404).json({ message: 'Medicine not found' });
+    res.json({ message: 'Medicine deleted' });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 
-export default router;
+module.exports = router;

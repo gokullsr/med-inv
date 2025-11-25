@@ -1,3 +1,4 @@
+// models/Inventory.js
 import mongoose from "mongoose";
 
 const inventorySchema = new mongoose.Schema({
@@ -5,7 +6,7 @@ const inventorySchema = new mongoose.Schema({
     type: String, 
     required: [true, "Medicine name is required"],
     trim: true,
-    unique: true
+    maxlength: [100, "Medicine name cannot exceed 100 characters"]
   },
   category: { 
     type: String, 
@@ -30,10 +31,20 @@ const inventorySchema = new mongoose.Schema({
   },
   expiryDate: { 
     type: Date, 
-    required: [true, "Expiry date is required"]
+    required: [true, "Expiry date is required"],
+    validate: {
+      validator: function(value) {
+        return value > new Date();
+      },
+      message: "Expiry date must be in the future"
+    }
   }
 }, { 
   timestamps: true 
 });
 
-export default mongoose.model("Inventory", inventorySchema);
+// Create index for faster searches
+inventorySchema.index({ name: 1 }, { unique: true });
+
+const Inventory = mongoose.model("Inventory", inventorySchema);
+export default Inventory;

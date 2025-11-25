@@ -3,7 +3,7 @@ import AuditLog from "../models/AuditLog.js";
 
 const router = express.Router();
 
-// Get audit logs with filtering
+
 router.get("/", async (req, res) => {
   try {
     const { page = 1, limit = 50, action, entityType, startDate, endDate } = req.query;
@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
     if (action) filter.action = action;
     if (entityType) filter.entityType = entityType;
     
-    // Date range filter
+    
     if (startDate || endDate) {
       filter.createdAt = {};
       if (startDate) filter.createdAt.$gte = new Date(startDate);
@@ -37,7 +37,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Get audit statistics
+
 router.get("/stats", async (req, res) => {
   try {
     const today = new Date();
@@ -61,7 +61,7 @@ router.get("/stats", async (req, res) => {
       createdAt: { $gte: today }
     });
 
-    // Get top activities
+
     const topActivities = await AuditLog.aggregate([
       {
         $group: {
@@ -83,7 +83,7 @@ router.get("/stats", async (req, res) => {
   }
 });
 
-// Clear audit logs
+
 router.delete("/", async (req, res) => {
   try {
     const { days } = req.query;
