@@ -20,7 +20,7 @@ services:
     runtime: node
     plan: free
     buildCommand: cd frontend && npm install && npm run build
-    startCommand: cd frontend && npm start
+    startCommand: cd frontend && npm install -g serve && serve -s build -l 3000
     envVars:
       - key: REACT_APP_API_URL
         sync: false
