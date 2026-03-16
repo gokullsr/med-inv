@@ -5,9 +5,9 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #fafbfd 0%, #f5f7fa 100%);
+  background: linear-gradient(135deg, #FAFBFC 0%, #F3F5F8 100%);
   min-height: 100vh;
-  color: #263238;
+  color: #2D3436;
 }
 
 code {
@@ -28,11 +28,11 @@ html {
 
 /* Selection colors */
 ::selection {
-  background: rgba(44, 90, 160, 0.2);
-  color: #263238;
+  background: rgba(75, 85, 99, 0.2);
+  color: #2D3436;
 }
 
 ::-moz-selection {
-  background: rgba(44, 90, 160, 0.2);
-  color: #263238;
+  background: rgba(75, 85, 99, 0.2);
+  color: #2D3436;
 }

@@ -9,6 +9,11 @@ import AddMedicine from './components/AddMedicine';
 import InventoryList from './components/InventoryList';
 import SalesCustomers from './components/SalesCustomers';
 import AuditLogs from './components/AuditLogs';
+import Alerts from './components/Alerts';
+import Analytics from './components/Analytics';
+import RealTimeDashboard from './components/RealTimeDashboard';
+import StockForecast from './components/StockForecast';
+import CustomerInsights from './components/CustomerInsights';
 
 function App() {
   return (
@@ -23,6 +28,9 @@ function App() {
               <Link className="nav-link" to="/">
                 📊 Dashboard
               </Link>
+              <Link className="nav-link" to="/realtime">
+                🚀 Real-Time
+              </Link>
               <Link className="nav-link" to="/inventory">
                 📦 Inventory
               </Link>
@@ -31,6 +39,15 @@ function App() {
               </Link>
               <Link className="nav-link" to="/sales-customers">
                 💰 Sales & Customers
+              </Link>
+              <Link className="nav-link" to="/forecast">
+                🔮 Forecast
+              </Link>
+              <Link className="nav-link" to="/customer-insights">
+                👥 Customer Insights
+              </Link>
+              <Link className="nav-link" to="/analytics">
+                📈 Analytics
               </Link>
               <Link className="nav-link" to="/audit-logs">
                 📋 Audit Logs
@@ -42,12 +59,16 @@ function App() {
         <main className="page">
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/realtime" element={<RealTimeDashboard />} />
             <Route path="/inventory" element={<InventoryList />} />
             <Route path="/add-medicine" element={<AddMedicine />} />
             <Route path="/sales-customers" element={<SalesCustomers />} />
+            <Route path="/forecast" element={<StockForecast />} />
+            <Route path="/customer-insights" element={<CustomerInsights />} />
             <Route path="/audit-logs" element={<AuditLogs />} />
-            // Add Alerts route to your navigation
+            {/* Add Alerts route to your navigation */}
             <Route path="/alerts" element={<Alerts />} />
+            <Route path="/analytics" element={<Analytics />} />
           </Routes>
         </main>
       </div>

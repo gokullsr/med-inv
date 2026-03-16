@@ -6,6 +6,9 @@ function InventoryList() {
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [sortBy, setSortBy] = useState("name");
 
   const fetchInventory = async () => {
     try {
@@ -35,6 +38,44 @@ function InventoryList() {
     }
   };
 
+  // Filter and search logic
+  const filteredInventory = inventory
+    .filter(item => {
+      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           item.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           item.manufacturer?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesStatus = 
+        filterStatus === "all" ||
+        (filterStatus === "in-stock" && item.quantity >= 10) ||
+        (filterStatus === "low-stock" && item.quantity > 0 && item.quantity < 10) ||
+        (filterStatus === "critical" && item.quantity > 0 && item.quantity < 5) ||
+        (filterStatus === "out-of-stock" && item.quantity === 0);
+      
+      return matchesSearch && matchesStatus;
+    })
+    .sort((a, b) => {
+      switch(sortBy) {
+        case "name":
+          return a.name.localeCompare(b.name);
+        case "price":
+          return a.price - b.price;
+        case "quantity":
+          return b.quantity - a.quantity;
+        case "expiry":
+          return new Date(a.expiryDate) - new Date(b.expiryDate);
+        default:
+          return 0;
+      }
+    });
+
+  const getStockStatus = (quantity) => {
+    if (quantity === 0) return { status: 'Out of Stock', color: '#E63946', bg: '#FFE5E5' };
+    if (quantity < 5) return { status: 'Critical', color: '#E63946', bg: '#FFE5E5' };
+    if (quantity < 10) return { status: 'Low Stock', color: '#FFB703', bg: '#FFF4E5' };
+    return { status: 'In Stock', color: '#52B788', bg: '#E5F5F0' };
+  };
+
   if (loading) {
     return (
       <div className="page">
@@ -51,12 +92,12 @@ function InventoryList() {
       <h1>📦 Inventory List</h1>
 
       {/* Connection Test Button */}
-      <div style={{ marginBottom: '1rem' }}>
+      <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem' }}>
         <button 
           onClick={testConnection}
           style={{
             padding: '0.5rem 1rem',
-            background: '#3b82f6',
+            background: '#507A88',
             color: 'white',
             border: 'none',
             borderRadius: '6px',
@@ -69,12 +110,11 @@ function InventoryList() {
           onClick={fetchInventory}
           style={{
             padding: '0.5rem 1rem',
-            background: '#10b981',
+            background: '#52B788',
             color: 'white',
             border: 'none',
             borderRadius: '6px',
-            cursor: 'pointer',
-            marginLeft: '0.5rem'
+            cursor: 'pointer'
           }}
         >
           Refresh
@@ -84,9 +124,9 @@ function InventoryList() {
       {/* Error Display */}
       {error && (
         <div style={{
-          background: '#fee2e2',
-          border: '1px solid #ef4444',
-          color: '#dc2626',
+          background: '#FFE5E5',
+          border: '1px solid #E63946',
+          color: '#8B2C2C',
           padding: '1rem',
           borderRadius: '8px',
           marginBottom: '1rem'
@@ -99,7 +139,7 @@ function InventoryList() {
         <div style={{ 
           textAlign: 'center', 
           padding: '3rem',
-          background: '#f8fafc',
+          background: '#18212F',
           borderRadius: '12px',
           border: '2px dashed #cbd5e1'
         }}>
@@ -126,14 +166,101 @@ function InventoryList() {
         </div>
       ) : (
         <>
+          {/* Search and Filter Controls */}
+          <div style={{
+            background: 'white',
+            padding: '1.5rem',
+            borderRadius: '8px',
+            marginBottom: '1.5rem',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
+              {/* Search */}
+              <input
+                type="text"
+                placeholder="🔍 Search by name, category, or manufacturer..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{
+                  padding: '0.75rem',
+                  border: '1px solid #e0e0e0',
+                  borderRadius: '6px',
+                  fontSize: '0.95rem'
+                }}
+              />
+
+              {/* Status Filter */}
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                style={{
+                  padding: '0.75rem',
+                  border: '1px solid #e0e0e0',
+                  borderRadius: '6px',
+                  fontSize: '0.95rem',
+                  cursor: 'pointer'
+                }}
+              >
+                <option value="all">📊 All Status</option>
+                <option value="in-stock">✅ In Stock</option>
+                <option value="low-stock">⚠️ Low Stock</option>
+                <option value="critical">🔴 Critical</option>
+                <option value="out-of-stock">❌ Out of Stock</option>
+              </select>
+
+              {/* Sort By */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                style={{
+                  padding: '0.75rem',
+                  border: '1px solid #e0e0e0',
+                  borderRadius: '6px',
+                  fontSize: '0.95rem',
+                  cursor: 'pointer'
+                }}
+              >
+                <option value="name">Sort: Name (A-Z)</option>
+                <option value="price">Sort: Price (Low to High)</option>
+                <option value="quantity">Sort: Quantity (High to Low)</option>
+                <option value="expiry">Sort: Expiry Date</option>
+              </select>
+            </div>
+          </div>
+
           <div style={{ 
             marginBottom: '1rem', 
             padding: '1rem', 
             background: '#f0fdf9', 
             borderRadius: '8px',
-            border: '1px solid #a7f3d0'
+            border: '1px solid #a7f3d0',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
           }}>
-            <strong>Total Items:</strong> {inventory.length} medicines in inventory
+            <div>
+              <strong>Showing {filteredInventory.length} of {inventory.length} medicines</strong>
+            </div>
+            {searchTerm || filterStatus !== "all" && (
+              <button
+                onClick={() => {
+                  setSearchTerm("");
+                  setFilterStatus("all");
+                }}
+                style={{
+                  padding: '0.4rem 0.8rem',
+                  background: '#fbbf24',
+                  color: '#78350f',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                  fontWeight: '600'
+                }}
+              >
+                Clear Filters
+              </button>
+            )}
           </div>
           
           <table>
@@ -144,44 +271,51 @@ function InventoryList() {
                 <th>Manufacturer</th>
                 <th>Price (₹)</th>
                 <th>Quantity</th>
+                <th>Status</th>
                 <th>Expiry Date</th>
               </tr>
             </thead>
             <tbody>
-              {inventory.map((item) => (
-                <tr key={item._id}>
-                  <td>
-                    <strong>{item.name}</strong>
-                    {item.quantity < 10 && (
-                      <span style={{ 
-                        marginLeft: '0.5rem',
-                        padding: '0.2rem 0.5rem',
-                        background: item.quantity < 5 ? '#fee2e2' : '#fef3c7',
-                        color: item.quantity < 5 ? '#dc2626' : '#92400e',
-                        borderRadius: '4px',
-                        fontSize: '0.7rem',
-                        fontWeight: '600'
-                      }}>
-                        {item.quantity < 5 ? 'LOW' : 'LOW STOCK'}
-                      </span>
-                    )}
+              {filteredInventory.length > 0 ? (
+                filteredInventory.map((item) => {
+                  const status = getStockStatus(item.quantity);
+                  return (
+                    <tr key={item._id}>
+                      <td><strong>{item.name}</strong></td>
+                      <td>{item.category || 'General'}</td>
+                      <td>{item.manufacturer || 'Unknown'}</td>
+                      <td>₹{item.price}</td>
+                      <td>
+                        <span style={{ 
+                          color: status.color,
+                          fontWeight: '600'
+                        }}>
+                          {item.quantity} units
+                        </span>
+                      </td>
+                      <td>
+                        <span style={{
+                          padding: '0.3rem 0.6rem',
+                          background: status.bg,
+                          color: status.color,
+                          borderRadius: '4px',
+                          fontSize: '0.85rem',
+                          fontWeight: '600'
+                        }}>
+                          {status.status}
+                        </span>
+                      </td>
+                      <td>{new Date(item.expiryDate).toLocaleDateString()}</td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: '#999' }}>
+                    No medicines match your filters. Try adjusting your search criteria.
                   </td>
-                  <td>{item.category || 'General'}</td>
-                  <td>{item.manufacturer || 'Unknown'}</td>
-                  <td>₹{item.price}</td>
-                  <td>
-                    <span style={{ 
-                      color: item.quantity === 0 ? '#ef4444' : 
-                             item.quantity < 5 ? '#f59e0b' : 
-                             item.quantity < 10 ? '#f59e0b' : '#10b981',
-                      fontWeight: '600'
-                    }}>
-                      {item.quantity} units
-                    </span>
-                  </td>
-                  <td>{new Date(item.expiryDate).toLocaleDateString()}</td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </>
@@ -190,5 +324,4 @@ function InventoryList() {
   );
 }
 
-// ✅ ONLY ONE EXPORT DEFAULT STATEMENT
 export default InventoryList;

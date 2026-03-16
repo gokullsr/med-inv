@@ -99,7 +99,7 @@ export default function AddMedicine() {
           type="button"
           style={{
             padding: '0.5rem 1rem',
-            background: '#3b82f6',
+            background: '#507A88',
             color: 'white',
             border: 'none',
             borderRadius: '6px',
@@ -114,9 +114,9 @@ export default function AddMedicine() {
       {/* Error Display */}
       {error && (
         <div style={{
-          background: '#fee2e2',
-          border: '1px solid #ef4444',
-          color: '#dc2626',
+          background: '#FFE5E5',
+          border: '1px solid #E63946',
+          color: '#8B2C2C',
           padding: '1rem',
           borderRadius: '8px',
           marginBottom: '1rem'

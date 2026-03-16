@@ -1,58 +1,58 @@
-/* App.css - Clean Light Theme Medical Inventory System */
+/* App.css - Modern Medical Inventory Management System */
 :root {
-  /* Light Clean Gradients */
-  --gradient-primary: linear-gradient(135deg, #4B5563 0%, #507A88 100%);
-  --gradient-secondary: linear-gradient(135deg, #A8B2C1 0%, #B8D4DC 100%);
-  --gradient-success: linear-gradient(135deg, #52B788 0%, #74C69D 100%);
-  --gradient-warning: linear-gradient(135deg, #FFB703 0%, #FFC300 100%);
-  --gradient-error: linear-gradient(135deg, #E63946 0%, #F77F88 100%);
-  --gradient-info: linear-gradient(135deg, #457B9D 0%, #6BA3D0 100%);
-  --gradient-accent: linear-gradient(135deg, #FFB4A2 0%, #FFD4C4 100%);
-  --gradient-teal: linear-gradient(135deg, #507A88 0%, #6FA8C2 100%);
-  --gradient-purple: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%);
-  --gradient-orange: linear-gradient(135deg, #FFB703 0%, #FFC300 100%);
-  --gradient-pink: linear-gradient(135deg, #FF6B9D 0%, #FFA0C0 100%);
+  /* Modern Medical Professional Gradient Colors */
+  --gradient-primary: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+  --gradient-secondary: linear-gradient(135deg, #00a8e8 0%, #0081b4 100%);
+  --gradient-success: linear-gradient(135deg, #06a77d 0%, #048860 100%);
+  --gradient-warning: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  --gradient-error: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+  --gradient-info: linear-gradient(135deg, #0288d1 0%, #01579b 100%);
+  --gradient-accent: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  --gradient-teal: linear-gradient(135deg, #00a8e8 0%, #0081b4 100%);
+  --gradient-purple: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  --gradient-orange: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  --gradient-pink: linear-gradient(135deg, #ec407a 0%, #d81b60 100%);
   
-  /* Light Solid Colors */
-  --primary-dark: #4B5563;
-  --primary-main: #507A88;
-  --primary-light: #A8B2C1;
-  --primary-soft: #F0F3F7;
+  /* Modern Solid Colors */
+  --primary-dark: #0052a3;
+  --primary-main: #0066cc;
+  --primary-light: #3399ff;
+  --primary-soft: #e3f2fd;
   
-  --secondary-dark: #457B9D;
-  --secondary-main: #6BA3D0;
-  --secondary-light: #B8D4DC;
-  --secondary-soft: #E8F1F5;
+  --secondary-dark: #0081b4;
+  --secondary-main: #00a8e8;
+  --secondary-light: #4dd0e1;
+  --secondary-soft: #e0f2f1;
   
-  --accent-success: #52B788;
-  --accent-warning: #FFB703;
-  --accent-error: #E63946;
-  --accent-info: #457B9D;
+  --accent-success: #06a77d;
+  --accent-warning: #ff9800;
+  --accent-error: #d32f2f;
+  --accent-info: #0288d1;
   
-  /* Neutral Colors - Light Theme */
-  --neutral-dark: #2D3436;
-  --neutral-main: #636E7F;
-  --neutral-light: #CDD5E0;
-  --neutral-bg: linear-gradient(135deg, #FAFBFC 0%, #F3F5F8 100%);
-  --neutral-surface: #FFFFFF;
-  --neutral-card: #F8FAFB;
-  --neutral-border: #E8EAED;
+  /* Neutral Colors */
+  --neutral-dark: #202124;
+  --neutral-main: #5f6368;
+  --neutral-light: #9aa0a6;
+  --neutral-bg: linear-gradient(135deg, #f8f9fa 0%, #f1f3f5 100%);
+  --neutral-surface: #ffffff;
+  --neutral-card: #fafbfc;
+  --neutral-border: #dadce0;
   
   /* Text Colors */
-  --text-primary: #2D3436;
-  --text-secondary: #636E7F;
-  --text-tertiary: #909BAB;
+  --text-primary: #202124;
+  --text-secondary: #5f6368;
+  --text-tertiary: #80868b;
   
-  /* Shadows - Subtle light shadows */
-  --shadow-sm: 0 2px 8px rgba(75, 85, 99, 0.08);
-  --shadow-md: 0 8px 24px rgba(75, 85, 99, 0.12);
-  --shadow-lg: 0 16px 48px rgba(75, 85, 99, 0.15);
-  --shadow-xl: 0 24px 64px rgba(75, 85, 99, 0.2);
+  /* Shadows - Modern subtle shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.18);
   
-  /* Glass Morphism - Light Clean */
-  --glass-bg: rgba(255, 255, 255, 0.95);
-  --glass-border: rgba(75, 85, 99, 0.1);
-  --glass-shadow: 0 8px 32px 0 rgba(75, 85, 99, 0.1);
+  /* Glass Morphism - Professional */
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
 }
 
 * {
@@ -79,12 +79,12 @@ body {
 
 /* Professional Navbar */
 .navbar {
-  background: var(--glass-bg);
+  background: var(--glass-bg) !important;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 2px solid var(--primary-main);
+  border-bottom: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
-  padding: 1.2rem 0;
+  padding: 1rem 0;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -92,8 +92,8 @@ body {
 }
 
 .navbar-brand {
-  font-weight: 800;
-  font-size: 2rem !important;
+  font-weight: 700;
+  font-size: 1.8rem !important;
   background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -101,7 +101,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  letter-spacing: -1px;
+  letter-spacing: -0.5px;
   position: relative;
 }
 
@@ -118,11 +118,8 @@ body {
 
 .navbar-nav {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  width: 100%;
 }
 
 .nav-link {
@@ -140,6 +137,21 @@ body {
   overflow: hidden;
   font-size: 0.95rem;
   background: rgba(44, 90, 160, 0.05);
+}
+
+.nav-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.6s;
+}
+
+.nav-link:hover::before {
+  left: 100%;
 }
 
 .nav-link:hover {
@@ -506,27 +518,27 @@ tr:hover {
 /* Inventory Grid */
 .inventory-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 2.5rem;
-  margin: 3rem 0;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  margin: 2.5rem 0;
   padding: 0;
   width: 100%;
 }
 
 .inventory-card {
-  background: var(--neutral-surface);
-  padding: 2rem;
-  border-radius: 14px;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
   box-shadow: var(--shadow-md);
-  border: 2px solid var(--neutral-border);
-  border-left: 6px solid var(--accent-success);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--neutral-border);
+  border-left: 5px solid var(--accent-success);
+  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  min-height: 280px;
+  min-height: 240px;
   justify-content: space-between;
 }
 
@@ -547,8 +559,8 @@ tr:hover {
 }
 
 .inventory-card:hover {
-  transform: translateY(-10px);
-  box-shadow: var(--shadow-xl);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
   border-color: var(--primary-main);
 }
 
@@ -577,9 +589,9 @@ tr:hover {
 }
 
 .inventory-card .quantity {
-  font-size: 2.2rem;
-  font-weight: 900;
-  margin: 1rem 0 0 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
   background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -610,9 +622,9 @@ tr:hover {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-weight: 800;
-  margin: 0.5rem 0;
-  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0;
+  font-size: 1.2rem;
 }
 
 .inventory-card small {

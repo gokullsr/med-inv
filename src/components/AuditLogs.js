@@ -504,10 +504,10 @@ export default function AuditLogs() {
                         }}>
                           {log.oldData && Object.keys(log.oldData).length > 0 && (
                             <div style={{ 
-                              background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
+                              background: 'linear-gradient(135deg, #FFE5E5 0%, #FFF0F0 100%)',
                               padding: '1.5rem',
                               borderRadius: '12px',
-                              border: '2px solid #fecaca'
+                              border: '2px solid #E63946'
                             }}>
                               <div style={{ color: 'var(--accent-error)', fontWeight: '700', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 📤 Old Data
@@ -525,10 +525,10 @@ export default function AuditLogs() {
                           )}
                           {log.newData && Object.keys(log.newData).length > 0 && (
                             <div style={{ 
-                              background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+                              background: 'linear-gradient(135deg, #E5F5F0 0%, #F0FDFB 100%)',
                               padding: '1.5rem',
                               borderRadius: '12px',
-                              border: '2px solid #bbf7d0'
+                              border: '2px solid #52B788'
                             }}>
                               <div style={{ color: 'var(--accent-success)', fontWeight: '700', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 📥 New Data

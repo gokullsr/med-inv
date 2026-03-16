@@ -39,12 +39,12 @@
 
 .alert-card.critical {
   border-left-color: var(--accent-error);
-  background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+  background: linear-gradient(135deg, rgba(211, 47, 47, 0.08) 0%, rgba(211, 47, 47, 0.04) 100%);
 }
 
 .alert-card.warning {
   border-left-color: var(--accent-warning);
-  background: linear-gradient(135deg, #fffbeb 0%, #fed7aa 100%);
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.08) 0%, rgba(255, 152, 0, 0.04) 100%);
 }
 
 .alert-details p {
@@ -101,7 +101,7 @@
 }
 
 .success-message {
-  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  background: linear-gradient(135deg, rgba(6, 167, 125, 0.08) 0%, rgba(6, 167, 125, 0.04) 100%);
   padding: 2rem;
   border-radius: 12px;
   border-left: 6px solid var(--accent-success);

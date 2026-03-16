@@ -90,7 +90,7 @@ const Dashboard = () => {
           onClick={testConnection}
           style={{
             padding: '0.5rem 1rem',
-            background: '#3b82f6',
+            background: '#507A88',
             color: 'white',
             border: 'none',
             borderRadius: '6px',
@@ -104,7 +104,7 @@ const Dashboard = () => {
           onClick={fetchData}
           style={{
             padding: '0.5rem 1rem',
-            background: '#10b981',
+            background: '#52B788',
             color: 'white',
             border: 'none',
             borderRadius: '6px',
@@ -118,9 +118,9 @@ const Dashboard = () => {
       {/* Error Display */}
       {error && (
         <div style={{
-          background: '#fee2e2',
-          border: '1px solid #ef4444',
-          color: '#dc2626',
+          background: '#FFE5E5',
+          border: '1px solid #E63946',
+          color: '#8B2C2C',
           padding: '1rem',
           borderRadius: '8px',
           marginBottom: '1rem'
@@ -165,13 +165,13 @@ const Dashboard = () => {
             border: '2px dashed #cbd5e1'
           }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📭</div>
-            <h3 style={{ color: '#64748b', marginBottom: '0.5rem' }}>No Medicines in Inventory</h3>
-            <p style={{ color: '#94a3b8' }}>Add medicines to get started with inventory management.</p>
+            <h3 style={{ color: '#909BAB', marginBottom: '0.5rem' }}>No Medicines in Inventory</h3>
+            <p style={{ color: '#636E7F' }}>Add medicines to get started with inventory management.</p>
             <button 
               onClick={() => window.location.href = '/add-medicine'}
               style={{
                 padding: '0.75rem 1.5rem',
-                background: '#3b82f6',
+                background: '#507A88',
                 color: 'white',
                 border: 'none',
                 borderRadius: '6px',
@@ -197,37 +197,41 @@ const Dashboard = () => {
 
               return (
                 <div key={item._id} className={`inventory-card ${stockInfo.class}`}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                    <h4>{item.name}</h4>
-                    <span className={`badge badge-${stockInfo.color}`}>
-                      {stockInfo.status}
-                    </span>
-                  </div>
-                  
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                    <div>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', marginBottom: '0.25rem' }}>Stock</div>
-                      <div className="quantity">{item.quantity} units</div>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem', gap: '1rem' }}>
+                      <h4 style={{ flex: 1, margin: 0 }}>{item.name}</h4>
+                      <span className={`badge badge-${stockInfo.color}`} style={{ whiteSpace: 'nowrap', fontSize: '0.75rem' }}>
+                        {stockInfo.status}
+                      </span>
                     </div>
-                    <div>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', marginBottom: '0.25rem' }}>Price</div>
-                      <div className="price">₹{item.price}</div>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                      <div>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', marginBottom: '0.25rem', fontWeight: '600' }}>Stock</div>
+                        <div className="quantity">{item.quantity} units</div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', marginBottom: '0.25rem', fontWeight: '600' }}>Price</div>
+                        <div className="price">₹{item.price}</div>
+                      </div>
+                    </div>
+
+                    <div style={{ 
+                      fontSize: '0.9rem', 
+                      color: 'var(--accent-info)', 
+                      fontWeight: '600',
+                      margin: '0.5rem 0'
+                    }}>
+                      Value: ₹{itemValue.toFixed(2)}
                     </div>
                   </div>
 
-                  <div style={{ 
-                    fontSize: '0.9rem', 
-                    color: 'var(--accent-info)', 
-                    fontWeight: '600',
-                    margin: '0.5rem 0'
-                  }}>
-                    Value: ₹{itemValue.toFixed(2)}
+                  <div style={{ borderTop: '1px solid var(--neutral-border)', paddingTop: '0.75rem', marginTop: 'auto' }}>
+                    <small style={{ display: 'block', marginBottom: '0.25rem', color: 'var(--text-secondary)' }}>Category: {item.category || 'General'}</small>
+                    <small style={{ display: 'block', color: 'var(--text-secondary)' }}>
+                      Expires: {new Date(item.expiryDate).toLocaleDateString()}
+                    </small>
                   </div>
-
-                  <small>Category: {item.category || 'General'}</small>
-                  <small style={{ display: 'block', marginTop: '0.25rem' }}>
-                    Expires: {new Date(item.expiryDate).toLocaleDateString()}
-                  </small>
                 </div>
               );
             })}
@@ -243,12 +247,12 @@ const Dashboard = () => {
           {/* Low Stock Alerts */}
           {lowStockAlerts.length > 0 && (
             <div style={{ marginBottom: '2rem' }}>
-              <h4 style={{ color: '#dc2626', marginBottom: '1rem' }}>🔴 Low Stock Alerts ({lowStockAlerts.length})</h4>
+              <h4 style={{ color: '#8B2C2C', marginBottom: '1rem' }}>🔴 Low Stock Alerts ({lowStockAlerts.length})</h4>
               <div className="alerts-list">
                 {lowStockAlerts.map((alert) => (
                   <div key={alert._id} className="alert-item">
                     <strong>{alert.name}</strong> • 
-                    Current Stock: <span style={{ color: '#dc2626', fontWeight: '600' }}>
+                    Current Stock: <span style={{ color: '#E63946', fontWeight: '600' }}>
                       {alert.quantity} units
                     </span> • 
                     Price: ₹{alert.price} •
@@ -262,12 +266,12 @@ const Dashboard = () => {
           {/* Expiring Soon Alerts */}
           {expiringSoon.length > 0 && (
             <div>
-              <h4 style={{ color: '#f59e0b', marginBottom: '1rem' }}>🟡 Expiring Soon ({expiringSoon.length})</h4>
+              <h4 style={{ color: '#C4750C', marginBottom: '1rem' }}>🟡 Expiring Soon ({expiringSoon.length})</h4>
               <div className="alerts-list">
                 {expiringSoon.map((medicine) => (
-                  <div key={medicine._id} className="alert-item" style={{ borderColor: '#f59e0b', background: '#fffbeb' }}>
+                  <div key={medicine._id} className="alert-item" style={{ borderColor: '#FFB703', background: '#FFF9E5' }}>
                     <strong>{medicine.name}</strong> • 
-                    Expiry: <span style={{ color: '#b45309', fontWeight: '600' }}>
+                    Expiry: <span style={{ color: '#C4750C', fontWeight: '600' }}>
                       {new Date(medicine.expiryDate).toLocaleDateString()}
                     </span> • 
                     Stock: {medicine.quantity} units •
