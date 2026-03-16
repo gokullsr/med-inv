@@ -20,9 +20,11 @@ services:
     runtime: node
     plan: free
     buildCommand: cd frontend && npm install && npm run build
-    startCommand: cd frontend && npm install -g serve && serve -s build -l 3000
+    startCommand: cd frontend && npm install -g serve && serve -s build -l $PORT
     envVars:
       - key: REACT_APP_API_URL
         sync: false
       - key: CI
         value: "false"
+      - key: PORT
+        value: 3000
