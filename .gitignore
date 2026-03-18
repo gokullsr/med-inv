@@ -38,3 +38,6 @@ Thumbs.db
 # Package lock files (optional - uncomment if you want to exclude)
 # package-lock.json
 # yarn.lock
+
+backend/.env
+backend/uploads/
