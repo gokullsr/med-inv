@@ -3,11 +3,52 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import multer from "multer";
+import path from "path";
+import { fileURLToPath } from "url";
+import fs from "fs";
 import Inventory from "./models/Inventory.js";
 import Sale from "./models/Sale.js";
 import Patient from "./models/Patient.js";
 import AuditLog from "./models/AuditLog.js";
 import AuditService from "./services/auditService.js";
+import Admin from "./models/Admin.js";
+import authRoutes from "./routes/auth.js";
+
+// Get __dirname equivalent for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Configure multer for image uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    if (extname && mimetype) {
+      return cb(null, true);
+    }
+    cb(new Error("Only image files (jpg, png, gif, webp) are allowed!"));
+  },
+});
 
 dotenv.config();
 const app = express();
@@ -19,12 +60,40 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Serve uploaded images as static files
+app.use("/uploads", express.static(uploadsDir));
+
 
 mongoose
   .connect(process.env.MONGO_URI || "mongodb://localhost:27017/medical_inventory")
-  .then(() => console.log("✅ Connected to MongoDB"))
+  .then(async () => {
+    console.log("✅ Connected to MongoDB");
+
+    // Auto-seed default admin if not exists
+    try {
+      const existingAdmin = await Admin.findOne({ email: "admin@gmail.com" });
+      if (!existingAdmin) {
+        const defaultAdmin = new Admin({
+          email: "admin@gmail.com",
+          password: "admin@124",
+          name: "JYO Admin",
+          role: "admin",
+          isActive: true
+        });
+        await defaultAdmin.save();
+        console.log("✅ Default admin seeded: admin@gmail.com");
+      } else {
+        console.log("✅ Admin already exists");
+      }
+    } catch (seedErr) {
+      console.error("⚠️ Admin seed error:", seedErr.message);
+    }
+  })
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
+
+// Auth routes
+app.use("/api/auth", authRoutes);
 
 app.get("/api/test", (req, res) => {
   res.json({ message: "Backend is working!" });
@@ -33,37 +102,38 @@ app.get("/api/test", (req, res) => {
 app.get("/api/inventory", async (req, res) => {
   try {
     const items = await Inventory.find().sort({ name: 1 });
-    
- 
+
+
     await AuditService.logInventoryViewed("System", req.ip, req.get('User-Agent'));
-    
+
     res.json(items);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-app.post("/api/inventory", async (req, res) => {
+app.post("/api/inventory", upload.single("image"), async (req, res) => {
   try {
     console.log("Received inventory data:", req.body);
-    
+    console.log("Received file:", req.file);
+
     const { name, category, manufacturer, price, quantity, expiryDate } = req.body;
 
-   
+
     if (!name || !price || !quantity || !expiryDate) {
-      return res.status(400).json({ 
-        error: "Missing required fields: name, price, quantity, expiryDate" 
+      return res.status(400).json({
+        error: "Missing required fields: name, price, quantity, expiryDate"
       });
     }
 
-   
-    const existingMedicine = await Inventory.findOne({ 
-      name: { $regex: new RegExp(name, 'i') } 
+
+    const existingMedicine = await Inventory.findOne({
+      name: { $regex: new RegExp(name, 'i') }
     });
-    
+
     if (existingMedicine) {
-      return res.status(400).json({ 
-        error: `Medicine "${name}" already exists in inventory` 
+      return res.status(400).json({
+        error: `Medicine "${name}" already exists in inventory`
       });
     }
 
@@ -73,36 +143,37 @@ app.post("/api/inventory", async (req, res) => {
       manufacturer: manufacturer?.trim() || "Unknown Manufacturer",
       price: parseFloat(price),
       quantity: parseInt(quantity),
-      expiryDate: new Date(expiryDate)
+      expiryDate: new Date(expiryDate),
+      image: req.file ? `/uploads/${req.file.filename}` : ""
     });
 
     const savedMedicine = await newMedicine.save();
-    
-    
+
+
     await AuditService.logMedicineAdded(savedMedicine, "System", req.ip, req.get('User-Agent'));
-    
+
     console.log("Medicine saved successfully:", savedMedicine);
-    
+
     res.status(201).json({
       message: "Medicine added successfully",
       medicine: savedMedicine
     });
-    
+
   } catch (err) {
     console.error("Error adding medicine:", err);
-    
+
     if (err.name === 'ValidationError') {
       const errors = Object.values(err.errors).map(error => error.message);
       return res.status(400).json({ error: `Validation error: ${errors.join(', ')}` });
     }
-    
+
     if (err.code === 11000) {
       return res.status(400).json({ error: "Medicine with this name already exists" });
     }
-    
-    res.status(500).json({ 
+
+    res.status(500).json({
       error: "Failed to add medicine to database",
-      details: err.message 
+      details: err.message
     });
   }
 });
@@ -118,7 +189,7 @@ app.put("/api/inventory/:id", async (req, res) => {
       return res.status(404).json({ error: "Medicine not found" });
     }
 
- 
+
     const oldData = {
       name: existingItem.name,
       category: existingItem.category,
@@ -129,12 +200,12 @@ app.put("/api/inventory/:id", async (req, res) => {
     };
 
     const updatedMedicine = await Inventory.findByIdAndUpdate(
-      id, 
-      updateData, 
+      id,
+      updateData,
       { new: true, runValidators: true }
     );
 
-  
+
     await AuditService.logMedicineUpdated(updatedMedicine, oldData, "System", req.ip, req.get('User-Agent'));
 
     res.json({
@@ -159,10 +230,10 @@ app.delete("/api/inventory/:id", async (req, res) => {
 
     await Inventory.findByIdAndDelete(id);
 
-    
+
     await AuditService.logMedicineDeleted(existingItem, "System", req.ip, req.get('User-Agent'));
 
-    res.json({ 
+    res.json({
       message: "Medicine deleted successfully",
       deletedMedicine: existingItem
     });
@@ -186,7 +257,7 @@ app.get("/api/inventory/alerts", async (req, res) => {
       ],
     });
 
-    
+
     if (alerts.length > 0) {
       for (const alert of alerts) {
         if (alert.quantity < 10) {
@@ -210,32 +281,32 @@ app.post("/api/sales", async (req, res) => {
     const { medicine, quantity, customer, condition } = req.body;
     console.log("📦 Sale request:", { medicine, quantity, customer, condition });
 
-    
+
     const inventoryItem = await Inventory.findOne({ name: medicine });
-    
+
     if (!inventoryItem) {
       return res.status(404).json({ error: "Medicine not found in inventory" });
     }
 
-    
+
     if (inventoryItem.quantity < parseInt(quantity)) {
-      return res.status(400).json({ 
-        error: `Insufficient stock. Available: ${inventoryItem.quantity}, Requested: ${quantity}` 
+      return res.status(400).json({
+        error: `Insufficient stock. Available: ${inventoryItem.quantity}, Requested: ${quantity}`
       });
     }
 
-    
+
     const oldQuantity = inventoryItem.quantity;
 
-   
+
     const unitPrice = inventoryItem.price;
     const totalPrice = unitPrice * parseInt(quantity);
 
-    
+
     inventoryItem.quantity -= parseInt(quantity);
     await inventoryItem.save();
 
-    
+
     const sale = new Sale({
       medicine,
       quantity: parseInt(quantity),
@@ -247,11 +318,11 @@ app.post("/api/sales", async (req, res) => {
     });
 
     const savedSale = await sale.save();
-    
-    
+
+
     await AuditService.logSaleRecorded(savedSale, "System", req.ip, req.get('User-Agent'));
     await AuditService.logStockUpdate(inventoryItem, oldQuantity, inventoryItem.quantity, "System", req.ip, req.get('User-Agent'));
-    
+
     res.status(201).json({
       sale: savedSale,
       updatedInventory: inventoryItem,
@@ -261,7 +332,7 @@ app.post("/api/sales", async (req, res) => {
         totalPrice
       }
     });
-    
+
   } catch (err) {
     console.error("❌ Sale error:", err);
     res.status(400).json({ error: err.message });
@@ -271,10 +342,10 @@ app.post("/api/sales", async (req, res) => {
 app.get("/api/sales", async (req, res) => {
   try {
     const sales = await Sale.find().sort({ date: -1 });
-    
-   
+
+
     await AuditService.logSalesViewed("System", req.ip, req.get('User-Agent'));
-    
+
     res.json(sales);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -286,10 +357,10 @@ app.post("/api/patients", async (req, res) => {
   try {
     const patient = new Patient(req.body);
     const savedPatient = await patient.save();
-    
-   
+
+
     await AuditService.logPatientAdded(savedPatient, "System", req.ip, req.get('User-Agent'));
-    
+
     res.status(201).json(savedPatient);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -299,10 +370,10 @@ app.post("/api/patients", async (req, res) => {
 app.get("/api/patients", async (req, res) => {
   try {
     const patients = await Patient.find();
-    
-   
+
+
     await AuditService.logPatientsViewed("System", req.ip, req.get('User-Agent'));
-    
+
     res.json(patients);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -313,12 +384,12 @@ app.get("/api/patients", async (req, res) => {
 app.get("/api/audit-logs", async (req, res) => {
   try {
     const { page = 1, limit = 50, action, entityType, startDate, endDate } = req.query;
-    
+
     const filter = {};
     if (action) filter.action = action;
     if (entityType) filter.entityType = entityType;
-    
-   
+
+
     if (startDate || endDate) {
       filter.createdAt = {};
       if (startDate) filter.createdAt.$gte = new Date(startDate);
@@ -367,7 +438,7 @@ app.get("/api/audit-logs/stats", async (req, res) => {
       createdAt: { $gte: today }
     });
 
-    
+
     const topActivities = await AuditLog.aggregate([
       {
         $group: {
@@ -393,7 +464,7 @@ app.get("/api/audit-logs/stats", async (req, res) => {
 app.delete("/api/audit-logs", async (req, res) => {
   try {
     const { days } = req.query;
-    
+
     let filter = {};
     if (days) {
       const cutoffDate = new Date();
@@ -403,7 +474,7 @@ app.delete("/api/audit-logs", async (req, res) => {
 
     const result = await AuditLog.deleteMany(filter);
 
-    
+
     await AuditService.logAction({
       action: 'AUDIT_LOGS_CLEARED',
       description: `Audit logs cleared - ${result.deletedCount} records removed`,
@@ -489,10 +560,10 @@ app.get("/api/dashboard/overview", async (req, res) => {
 app.get("/api/health", async (req, res) => {
   try {
     const dbStatus = mongoose.connection.readyState === 1 ? "connected" : "disconnected";
-    
+
     const collections = await mongoose.connection.db.listCollections().toArray();
     const collectionNames = collections.map(col => col.name);
-    
+
     res.json({
       status: "healthy",
       database: dbStatus,
@@ -500,9 +571,9 @@ app.get("/api/health", async (req, res) => {
       timestamp: new Date().toISOString()
     });
   } catch (err) {
-    res.status(500).json({ 
+    res.status(500).json({
       status: "unhealthy",
-      error: err.message 
+      error: err.message
     });
   }
 });
@@ -510,9 +581,9 @@ app.get("/api/health", async (req, res) => {
 
 app.use((err, req, res, next) => {
   console.error("Unhandled error:", err);
-  res.status(500).json({ 
+  res.status(500).json({
     error: "Internal server error",
-    message: err.message 
+    message: err.message
   });
 });
 
