@@ -1,0 +1,108 @@
+.alerts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.alert-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: var(--glass-bg);
+}
+
+.alert-section.critical {
+  border-left: 6px solid var(--accent-error);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(220, 38, 38, 0.02) 100%);
+}
+
+.alert-section.warning {
+  border-left: 6px solid var(--accent-warning);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(217, 119, 6, 0.02) 100%);
+}
+
+.alerts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.alert-card {
+  padding: 1.5rem;
+  border-radius: 8px;
+  background: white;
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid;
+}
+
+.alert-card.critical {
+  border-left-color: var(--accent-error);
+  background: linear-gradient(135deg, rgba(211, 47, 47, 0.08) 0%, rgba(211, 47, 47, 0.04) 100%);
+}
+
+.alert-card.warning {
+  border-left-color: var(--accent-warning);
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.08) 0%, rgba(255, 152, 0, 0.04) 100%);
+}
+
+.alert-details p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.stock-critical {
+  color: var(--accent-error);
+  font-weight: bold;
+}
+
+.stock-warning {
+  color: var(--accent-warning);
+  font-weight: bold;
+}
+
+.alert-actions {
+  margin-top: 1rem;
+}
+
+.alert-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.stat-card {
+  padding: 1.5rem;
+  background: var(--glass-bg);
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.stat-number.critical {
+  color: var(--accent-error);
+}
+
+.stat-number.warning {
+  color: var(--accent-warning);
+}
+
+.no-alerts {
+  text-align: center;
+  padding: 3rem;
+}
+
+.success-message {
+  background: linear-gradient(135deg, rgba(6, 167, 125, 0.08) 0%, rgba(6, 167, 125, 0.04) 100%);
+  padding: 2rem;
+  border-radius: 12px;
+  border-left: 6px solid var(--accent-success);
+}
