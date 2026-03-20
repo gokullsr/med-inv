@@ -174,7 +174,7 @@ const RealTimeDashboard = () => {
         <div className="kpi-card" style={{ background: 'linear-gradient(135deg, #457B9D 0%, #6BA3D0 100%)' }}>
           <div style={{ color: 'white' }}>
             <div style={{ fontSize: '0.9rem', opacity: 0.9, fontWeight: 500 }}>Total Revenue</div>
-            <div style={{ fontSize: '2.2rem', fontWeight: 'bold', marginTop: '0.8rem' }}>₹{metrics.totalRevenue.toFixed(0)}</div>
+            <div style={{ fontSize: '2.2rem', fontWeight: 'bold', marginTop: '0.8rem' }}>₹{metrics.totalRevenue.toFixed(2)}</div>
             <div style={{ fontSize: '0.75rem', opacity: 0.7, marginTop: '0.5rem' }}>All-time sales</div>
           </div>
         </div>
@@ -182,7 +182,7 @@ const RealTimeDashboard = () => {
         <div className="kpi-card" style={{ background: 'linear-gradient(135deg, #52B788 0%, #74C69D 100%)' }}>
           <div style={{ color: 'white' }}>
             <div style={{ fontSize: '0.9rem', opacity: 0.9, fontWeight: 500 }}>Today's Sales</div>
-            <div style={{ fontSize: '2.2rem', fontWeight: 'bold', marginTop: '0.8rem' }}>₹{metrics.dailyRevenue.toFixed(0)}</div>
+            <div style={{ fontSize: '2.2rem', fontWeight: 'bold', marginTop: '0.8rem' }}>₹{metrics.dailyRevenue.toFixed(2)}</div>
             <div style={{ fontSize: '0.75rem', opacity: 0.7, marginTop: '0.5rem' }}>Current day</div>
           </div>
         </div>

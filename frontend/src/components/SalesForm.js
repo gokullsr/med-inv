@@ -348,7 +348,7 @@ export default function SalesForm() {
               <div>
                 <div style={{ fontSize: '0.9rem', color: 'var(--text-tertiary)', marginBottom: '0.5rem' }}>Total Revenue</div>
                 <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--accent-success)' }}>
-                  ₹{sales.reduce((sum, sale) => sum + sale.totalPrice, 0)}
+                  ₹{sales.reduce((sum, sale) => sum + sale.totalPrice, 0).toFixed(2)}
                 </div>
               </div>
               <div>

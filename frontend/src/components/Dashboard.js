@@ -304,7 +304,7 @@ const Dashboard = () => {
                   <td><strong>{sale.medicine}</strong></td>
                   <td>{sale.quantity} units</td>
                   <td style={{ color: 'var(--accent-success)', fontWeight: '600' }}>
-                    ₹{sale.totalPrice}
+                    ₹{sale.totalPrice.toFixed(2)}
                   </td>
                   <td>{sale.customer}</td>
                   <td>{new Date(sale.date).toLocaleDateString()}</td>

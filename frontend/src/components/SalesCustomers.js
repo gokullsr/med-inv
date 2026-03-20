@@ -232,7 +232,7 @@ export default function SalesCustomers() {
       <div className="cards-container">
         <div className="card success">
           <h3>Total Revenue</h3>
-          <p>₹{totalRevenue}</p>
+          <p>₹{totalRevenue.toFixed(2)}</p>
           <small>All transactions</small>
         </div>
         <div className="card primary">
@@ -372,7 +372,7 @@ export default function SalesCustomers() {
                         color: '#166534',
                         marginLeft: '0.5rem'
                       }}>
-                        ₹{priceDetails.totalPrice}
+                        ₹{priceDetails.totalPrice.toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -417,7 +417,7 @@ export default function SalesCustomers() {
                     'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'
                 }}
               >
-                {loading ? "Processing Sale..." : `Record Sale ${priceDetails.calculated ? `- ₹${priceDetails.totalPrice}` : ''}`}
+                {loading ? "Processing Sale..." : `Record Sale ${priceDetails.calculated ? `- ₹${priceDetails.totalPrice.toFixed(2)}` : ''}`}
               </button>
             </form>
 
@@ -448,7 +448,7 @@ export default function SalesCustomers() {
                         <td>{sale.quantity} units</td>
                         <td>₹{sale.unitPrice}</td>
                         <td style={{ color: 'var(--accent-success)', fontWeight: '600' }}>
-                          ₹{sale.totalPrice}
+                          ₹{sale.totalPrice.toFixed(2)}
                         </td>
                         <td>{sale.customer}</td>
                         <td>

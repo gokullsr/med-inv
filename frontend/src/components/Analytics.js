@@ -126,11 +126,11 @@ const Analytics = () => {
             </div>
             <div className="stat-item">
               <span className="stat-label">Total Revenue</span>
-              <span className="stat-value">₹{sales.reduce((sum, s) => sum + (s.totalPrice || 0), 0).toFixed(0)}</span>
+              <span className="stat-value">₹{sales.reduce((sum, s) => sum + (s.totalPrice || 0), 0).toFixed(2)}</span>
             </div>
             <div className="stat-item">
               <span className="stat-label">Inventory Value</span>
-              <span className="stat-value">₹{inventory.reduce((sum, i) => sum + (i.price * i.quantity), 0).toFixed(0)}</span>
+              <span className="stat-value">₹{inventory.reduce((sum, i) => sum + (i.price * i.quantity), 0).toFixed(2)}</span>
             </div>
           </div>
         </div>
