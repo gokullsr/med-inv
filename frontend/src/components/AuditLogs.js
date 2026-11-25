@@ -148,6 +148,71 @@ export default function AuditLogs() {
     );
   });
 
+  const renderDataDifferences = (oldData, newData) => {
+    const allKeys = new Set([...Object.keys(oldData || {}), ...Object.keys(newData || {})]);
+    const filteredKeys = Array.from(allKeys).filter(key => !['_id', '__v', 'createdAt', 'updatedAt'].includes(key));
+
+    if (filteredKeys.length === 0) return null;
+
+    return (
+      <div style={{ overflowX: 'auto', background: 'var(--neutral-card)', borderRadius: '12px', padding: '1rem', border: '1px solid var(--neutral-border)' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '400px' }}>
+          <thead>
+            <tr style={{ borderBottom: '2px solid var(--neutral-border)' }}>
+              <th style={{ padding: '0.75rem', color: 'var(--text-secondary)' }}>Changed Field</th>
+              {oldData && <th style={{ padding: '0.75rem', color: '#E63946' }}>Previous Data</th>}
+              {newData && <th style={{ padding: '0.75rem', color: '#52B788' }}>Updated Data</th>}
+            </tr>
+          </thead>
+          <tbody>
+            {filteredKeys.map(key => {
+              const oldVal = oldData?.[key];
+              const newVal = newData?.[key];
+
+              const displayVal = (val) => {
+                if (val === null || val === undefined) return '-';
+                if (typeof val === 'object') return JSON.stringify(val);
+                return String(val);
+              };
+
+              const oldStr = displayVal(oldVal);
+              const newStr = displayVal(newVal);
+              const isDiff = oldData && newData && oldStr !== newStr;
+
+              return (
+                <tr key={key} style={{ borderBottom: '1px solid var(--neutral-light)', background: isDiff ? 'rgba(0,0,0,0.02)' : 'transparent' }}>
+                  <td style={{ padding: '0.75rem', fontWeight: '600', color: 'var(--text-primary)' }}>
+                    {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
+                  </td>
+                  {oldData && (
+                    <td style={{
+                      padding: '0.75rem',
+                      color: isDiff ? '#E63946' : 'var(--text-secondary)',
+                      textDecoration: isDiff ? 'line-through' : 'none',
+                      fontFamily: 'monospace'
+                    }}>
+                      {oldStr}
+                    </td>
+                  )}
+                  {newData && (
+                    <td style={{
+                      padding: '0.75rem',
+                      color: isDiff ? '#52B788' : 'var(--text-secondary)',
+                      fontWeight: isDiff ? '600' : 'normal',
+                      fontFamily: 'monospace'
+                    }}>
+                      {newStr}
+                    </td>
+                  )}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
   return (
     <div className="page">
       <h1><span style={{ WebkitTextFillColor: "initial", marginRight: "8px" }}>📋</span> Audit Logs & Activity History</h1>
@@ -444,10 +509,10 @@ export default function AuditLogs() {
                       </div>
                       <div style={{ textAlign: 'right', minWidth: '180px' }}>
                         <div style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: '700' }}>
-                          {new Date(log.createdAt).toLocaleDateString()}
+                          {new Date(log.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                         </div>
                         <div style={{ fontSize: '0.9rem', color: 'var(--text-tertiary)' }}>
-                          {new Date(log.createdAt).toLocaleTimeString()}
+                          {new Date(log.createdAt).toLocaleTimeString('en-GB')}
                         </div>
                       </div>
                     </div>
@@ -497,53 +562,9 @@ export default function AuditLogs() {
                           <span>🔄 Data Changes</span>
                         </div>
                         <div style={{
-                          display: 'grid',
-                          gridTemplateColumns: '1fr 1fr',
-                          gap: '1.5rem',
-                          fontSize: '0.85rem'
+                          display: 'block'
                         }}>
-                          {log.oldData && Object.keys(log.oldData).length > 0 && (
-                            <div style={{
-                              background: 'linear-gradient(135deg, #FFE5E5 0%, #FFF0F0 100%)',
-                              padding: '1.5rem',
-                              borderRadius: '12px',
-                              border: '2px solid #E63946'
-                            }}>
-                              <div style={{ color: 'var(--accent-error)', fontWeight: '700', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                📤 Old Data
-                              </div>
-                              <pre style={{
-                                margin: 0,
-                                whiteSpace: 'pre-wrap',
-                                fontFamily: 'monospace',
-                                fontSize: '0.8rem',
-                                lineHeight: '1.4'
-                              }}>
-                                {JSON.stringify(log.oldData, null, 2)}
-                              </pre>
-                            </div>
-                          )}
-                          {log.newData && Object.keys(log.newData).length > 0 && (
-                            <div style={{
-                              background: 'linear-gradient(135deg, #E5F5F0 0%, #F0FDFB 100%)',
-                              padding: '1.5rem',
-                              borderRadius: '12px',
-                              border: '2px solid #52B788'
-                            }}>
-                              <div style={{ color: 'var(--accent-success)', fontWeight: '700', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                📥 New Data
-                              </div>
-                              <pre style={{
-                                margin: 0,
-                                whiteSpace: 'pre-wrap',
-                                fontFamily: 'monospace',
-                                fontSize: '0.8rem',
-                                lineHeight: '1.4'
-                              }}>
-                                {JSON.stringify(log.newData, null, 2)}
-                              </pre>
-                            </div>
-                          )}
+                          {renderDataDifferences(log.oldData, log.newData)}
                         </div>
                       </div>
                     )}

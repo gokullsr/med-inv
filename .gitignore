@@ -41,3 +41,4 @@ Thumbs.db
 
 backend/.env
 backend/uploads/
+frontend/devo.pem

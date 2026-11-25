@@ -10,13 +10,27 @@ router.get("/", async (req, res) => {
     
     const filter = {};
     if (action) filter.action = action;
-    if (entityType) filter.entityType = entityType;
+    if (entityType) {
+      if (entityType === "Sale") {
+        filter.entityType = { $in: ["Sale", "Sales"] };
+      } else if (entityType === "Patient") {
+        filter.entityType = { $in: ["Patient", "Patients"] };
+      } else {
+        filter.entityType = entityType;
+      }
+    }
     
     
     if (startDate || endDate) {
       filter.createdAt = {};
-      if (startDate) filter.createdAt.$gte = new Date(startDate);
-      if (endDate) filter.createdAt.$lte = new Date(endDate);
+      if (startDate) {
+        filter.createdAt.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        filter.createdAt.$lte = end;
+      }
     }
 
     const logs = await AuditLog.find(filter)
